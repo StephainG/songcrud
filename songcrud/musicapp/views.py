@@ -88,3 +88,45 @@ def songs_detail(request, pk):
     elif request.method == 'DELETE':
         song.delete()
         return Response(status=204)
+
+@api_view(['GET', 'POST'])
+def LyricsView(request):
+
+    if request.method == 'GET':
+        lyrics = Lyric.objects.all()
+        serializer = LyricSerializer(lyrics, many = True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        serializer = LyricSerializer(data = request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def lyrics_detail(request, pk):
+
+    try:
+        lyric = Lyric.objects.get(pk = pk)
+    except lyric.DoesNotExist:
+        return Response(status=404)
+
+    if request.method == 'GET':
+        serializer = LyricSerializer(lyric)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = LyricSerializer(song, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+
+    elif request.method == 'DELETE':
+        lyric.delete()
+        return Response(status=204)
+
